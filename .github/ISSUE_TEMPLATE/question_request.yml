@@ -1,0 +1,55 @@
+name: Suggest a question
+description: A React interview question that is not covered yet
+title: "[Question]: "
+labels: ["question-request"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: Phrase it the way it was actually asked
+      placeholder: "What is the difference between useMemo and useCallback?"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - React Fundamentals
+        - JSX & Rendering
+        - Components & Props
+        - State & Events
+        - Hooks
+        - Effects & Lifecycle
+        - Performance
+        - State Management
+        - Routing & Forms
+        - Advanced Patterns
+        - React 19 & Server Components
+        - Testing & Tooling
+        - JavaScript & TypeScript
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options: [Easy, Medium, Hard]
+    validations:
+      required: true
+
+  - type: textarea
+    id: short-answer
+    attributes:
+      label: Short answer (optional)
+      description: One or two sentences — what you would say out loud in the interview
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Where were you asked this?
+      description: Company type and role level help us judge how common it is. No need to name the company.
+      placeholder: "Mid-level frontend role, series-B startup"

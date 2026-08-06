@@ -1,0 +1,72 @@
+[
+  {
+    "name": "React Fundamentals",
+    "slug": "react-fundamentals",
+    "description": "What React is, the virtual DOM, reconciliation, declarative rendering and how the library actually works underneath"
+  },
+  {
+    "name": "JSX & Rendering",
+    "slug": "jsx-and-rendering",
+    "description": "JSX syntax and semantics, keys, lists, conditional rendering, fragments and what triggers a re-render"
+  },
+  {
+    "name": "Components & Props",
+    "slug": "components-and-props",
+    "description": "Function components, props, children, composition, and the patterns for passing data down the tree"
+  },
+  {
+    "name": "State & Events",
+    "slug": "state-and-events",
+    "description": "useState, state batching, immutable updates, lifting state up, controlled inputs and React's synthetic event system"
+  },
+  {
+    "name": "Hooks",
+    "slug": "hooks",
+    "description": "Every built-in hook, the rules of hooks, dependency arrays and writing your own custom hooks"
+  },
+  {
+    "name": "Effects & Lifecycle",
+    "slug": "effects-and-lifecycle",
+    "description": "useEffect, cleanup functions, mount and unmount behaviour, Strict Mode double-invocation and data fetching"
+  },
+  {
+    "name": "Performance",
+    "slug": "performance",
+    "description": "memo, useMemo, useCallback, list virtualisation, code splitting and how to find a real bottleneck before optimising"
+  },
+  {
+    "name": "State Management",
+    "slug": "state-management",
+    "description": "Context, Redux Toolkit, Zustand, React Query and choosing between server state and client state"
+  },
+  {
+    "name": "Routing & Forms",
+    "slug": "routing-and-forms",
+    "description": "React Router, navigation patterns, controlled versus uncontrolled forms and form libraries"
+  },
+  {
+    "name": "Advanced Patterns",
+    "slug": "advanced-patterns",
+    "description": "Portals, error boundaries, refs, HOCs, render props, compound components and Suspense"
+  },
+  {
+    "name": "React 19 & Server Components",
+    "slug": "react-19-and-server-components",
+    "description": "Server Components, Actions, use(), the new hooks in React 19 and how Next.js App Router builds on them"
+  },
+  {
+    "name": "Testing & Tooling",
+    "slug": "testing-and-tooling",
+    "description": "React Testing Library, Jest and Vitest, what to test, plus build tooling and dev tools"
+  },
+  {
+    "name": "JavaScript & TypeScript",
+    "slug": "javascript-and-typescript",
+    "description": "The JavaScript closures, equality rules and async behaviour that React interviews probe, plus typing React with TypeScript"
+  },
+  {
+    "name": "Most Asked",
+    "slug": "most-asked",
+    "description": "The questions that come up in almost every React interview. If you only have one evening, drill these"
+  }
+]

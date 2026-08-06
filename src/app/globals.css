@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #111827;
+  background: #ffffff;
+}
+
+/* Code block inner scroll area (used by CodeBlock.tsx) */
+.code-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.code-scroll::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+.code-scroll::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+.code-scroll::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Sidebar / list scrollbars */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Page scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-left: 1px solid #d1d5db;
+}
+::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 6px;
+  border: 2px solid #e5e7eb;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #e5e7eb;
+}
+
+/* The cheat sheet is meant to be printed and carried into the interview. */
+@media print {
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .print-compact {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #d1d5db;
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-08-06",
+  "resources": [
+    {
+      "title": "React documentation (react.dev)",
+      "url": "https://react.dev",
+      "description": "The official docs. The Learn section and the hook API reference are the source of truth for most of these answers."
+    },
+    {
+      "title": "React DOM & hooks API reference",
+      "url": "https://react.dev/reference/react",
+      "description": "Exact signatures and behaviour for every built-in hook and API."
+    },
+    {
+      "title": "Next.js App Router documentation",
+      "url": "https://nextjs.org/docs/app",
+      "description": "Server Components, Actions and streaming as they are actually shipped in a framework."
+    },
+    {
+      "title": "Testing Library guiding principles",
+      "url": "https://testing-library.com/docs/guiding-principles/",
+      "description": "Why queries are ordered by accessibility and what 'test like a user' means in practice."
+    },
+    {
+      "title": "MDN JavaScript reference",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+      "description": "For the closure, equality and async semantics that React questions rest on."
+    }
+  ]
+}

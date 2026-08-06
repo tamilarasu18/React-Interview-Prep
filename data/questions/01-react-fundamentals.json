@@ -1,0 +1,192 @@
+[
+  {
+    "id": 1,
+    "question": "What is React?",
+    "shortAnswer": "React is a JavaScript library for building user interfaces out of components. You describe what the UI should look like for a given state, and React figures out the DOM operations needed to get there. It is a library, not a framework — routing, data fetching and styling are your choice.",
+    "memoryHook": "You write the WHAT, React works out the HOW. Library, not framework.",
+    "answer": "## The one-sentence definition\n\nReact is a **declarative, component-based JavaScript library for building user interfaces**, maintained by Meta.\n\n---\n\n## Unpacking that\n\n| Word | What it means in practice |\n|------|---------------------------|\n| **Declarative** | You describe the UI for a given state. You never write `document.createElement` or manually patch the DOM. |\n| **Component-based** | The UI is a tree of reusable functions that each return a piece of UI. |\n| **Library** | It solves rendering. Routing, data fetching, forms and styling come from elsewhere. |\n\n---\n\n## Imperative vs declarative\n\n```jsx\n// Imperative (vanilla DOM) — you list every step\nconst el = document.createElement('p');\nel.textContent = `Count: ${count}`;\nel.className = 'counter';\ndocument.body.appendChild(el);\n// ...and remember to update it later when count changes\n\n// Declarative (React) — you state the result\nfunction Counter({ count }) {\n  return <p className=\"counter\">Count: {count}</p>;\n}\n```\n\nWhen `count` changes, React re-runs the function, compares the result to the previous one, and applies the minimum set of DOM changes.\n\n---\n\n## Why interviewers ask this\n\nThey want to hear **\"library\"** and **\"declarative\"**. Saying \"React is a framework\" is the single most common way to open badly. The follow-up is usually \"so what does React *not* give you?\" — answer: routing, HTTP, global state, styling, build tooling.\n\n---\n\n## Where it runs\n\nReact itself is renderer-agnostic. `react-dom` renders to the browser, `react-native` to native mobile views, and other renderers exist for canvas, terminals and PDFs. That split is why the package is `react` plus a separate renderer.",
+    "categories": ["React Fundamentals", "Most Asked"],
+    "difficulty": "Easy",
+    "tags": ["react", "basics", "definition"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": [
+      { "title": "react.dev — Quick Start", "url": "https://react.dev/learn" }
+    ]
+  },
+  {
+    "id": 2,
+    "question": "What is the virtual DOM and why does React use it?",
+    "shortAnswer": "The virtual DOM is a lightweight JavaScript object tree describing what the UI should look like. When state changes React builds a new tree, diffs it against the previous one, and applies only the changed parts to the real DOM. The point is not raw speed — it is that you get to write code as if you re-render everything, while React keeps the actual DOM work small.",
+    "memoryHook": "A cheap sketch before the expensive build. Diff the sketches, only build the difference.",
+    "answer": "## What it actually is\n\nA plain JavaScript object. Nothing magical:\n\n```jsx\n// This JSX...\n<button className=\"primary\" onClick={save}>Save</button>\n\n// ...becomes roughly this object\n{\n  type: 'button',\n  props: {\n    className: 'primary',\n    onClick: save,\n    children: 'Save'\n  }\n}\n```\n\nCreating and comparing objects like this is cheap. Touching the real DOM is expensive, because reading layout properties can force synchronous reflow and every mutation can trigger style recalculation.\n\n---\n\n## The cycle\n\n1. State changes.\n2. React re-runs the component and builds a **new** virtual tree.\n3. It **diffs** the new tree against the previous one (reconciliation).\n4. It computes the minimal set of real DOM operations and **commits** them in one batch.\n\n---\n\n## The honest answer about performance\n\nA hand-written imperative update will always beat React, because React does extra work to figure out what changed. The virtual DOM does not make React faster than optimal vanilla JS.\n\nWhat it buys you is that **the naive thing is fast enough**. You write \"render the whole list\" and React quietly turns it into \"change one text node\". You get maintainable code without paying the usual performance tax for it.\n\n> If an interviewer says \"so the virtual DOM is faster than the DOM?\" — the correct answer is \"faster than *unoptimised* direct DOM manipulation, and fast enough that you never have to hand-optimise. It is a productivity mechanism first.\"\n\n---\n\n## What it is not\n\n- Not a copy of the real DOM.\n- Not unique to React — Vue, Preact and others use the same idea.\n- Not required for declarative UI. Svelte and Solid compile to direct updates and skip it entirely.",
+    "categories": ["React Fundamentals", "Most Asked"],
+    "difficulty": "Medium",
+    "tags": ["virtual-dom", "rendering", "performance"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 3,
+    "question": "What is reconciliation and how does React's diffing algorithm work?",
+    "shortAnswer": "Reconciliation is the process of comparing the new element tree with the previous one to decide what to change in the DOM. A general tree diff is O(n³), so React uses two heuristics to get it to O(n): if an element's type changes it tears down the whole subtree and rebuilds it, and within a list it uses keys to match elements across renders.",
+    "memoryHook": "Two rules make O(n³) into O(n): different type means throw it away; same key means it is the same thing.",
+    "answer": "## The problem\n\nComparing two arbitrary trees optimally is **O(n³)**. For a thousand nodes that is a billion operations — unusable. React drops to **O(n)** by assuming two things that are almost always true in real UIs.\n\n---\n\n## Heuristic 1 — different type, different tree\n\nIf the element type at a position changes, React does not try to diff further. It unmounts the old subtree entirely (losing its state) and mounts the new one.\n\n```jsx\n// <Counter /> unmounts completely and remounts — its state resets to 0\n{isEditing ? <div><Counter /></div> : <span><Counter /></span>}\n```\n\nThis is also the classic cause of \"my input keeps losing focus\" and \"my state mysteriously resets\":\n\n```jsx\n// ❌ A new component type is created on every render, so React\n// unmounts and remounts the whole subtree every single time\nfunction Parent() {\n  function Child() { return <input />; }   // new function identity each render\n  return <Child />;\n}\n\n// ✅ Define it outside, so the type is stable across renders\nfunction Child() { return <input />; }\nfunction Parent() { return <Child />; }\n```\n\n---\n\n## Heuristic 2 — keys identify siblings\n\nWithin a list, React matches children across renders by `key` rather than by position. That is the entire reason keys exist.\n\n```jsx\n// Without keys, inserting at the front makes React think every item changed\n{users.map((user) => <Row key={user.id} user={user} />)}\n```\n\n---\n\n## Same type, same position\n\nWhen the type matches, React keeps the DOM node and the component instance, updates only the props that differ, and recurses into the children.\n\n---\n\n## Fiber, briefly\n\nSince React 16 the reconciler is **Fiber**, which splits rendering into interruptible units of work. That is what makes concurrent features possible — React can start rendering, pause to handle a keystroke, and resume. The diffing heuristics above did not change; the scheduling around them did.",
+    "categories": ["React Fundamentals", "Most Asked"],
+    "difficulty": "Hard",
+    "tags": ["reconciliation", "diffing", "fiber", "keys"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": [
+      { "title": "react.dev — Preserving and Resetting State", "url": "https://react.dev/learn/preserving-and-resetting-state" }
+    ]
+  },
+  {
+    "id": 4,
+    "question": "What is the difference between a library and a framework, and which is React?",
+    "shortAnswer": "React is a library. The difference is who calls whom: you call a library from your code, whereas a framework calls your code and owns the application structure. React only owns rendering, so you choose your own router, data layer and build setup. Next.js wraps React into something that behaves like a framework.",
+    "memoryHook": "Inversion of control. You call a library; a framework calls you. React waits to be called.",
+    "answer": "## The distinction\n\nIt comes down to **inversion of control**.\n\n| | Library | Framework |\n|---|---------|-----------|\n| Who is in charge | Your code | The framework |\n| Structure | You decide | Prescribed |\n| Example | React, lodash | Angular, Next.js, Rails |\n\n---\n\n## Why React is a library\n\nReact renders components. It has no opinion about:\n\n- **Routing** — React Router, TanStack Router, or the framework's own\n- **Data fetching** — fetch, axios, React Query, SWR\n- **Global state** — Context, Redux, Zustand, Jotai\n- **Styling** — CSS Modules, Tailwind, styled-components\n- **Build tooling** — Vite, webpack, Parcel\n\nAngular ships all of that in the box and tells you where files go. That is the difference.\n\n---\n\n## The nuance worth mentioning\n\nReact-the-library is increasingly used through React-the-framework. Server Components and Actions genuinely require a framework-level bundler and router integration — you cannot use them with plain `react-dom` and a script tag. The React team now points beginners at Next.js or React Router by default.\n\nSo a strong answer is: **\"React itself is a library, but modern React is usually consumed through a framework, and some newer features assume one.\"** That shows you have been paying attention past 2023.",
+    "categories": ["React Fundamentals"],
+    "difficulty": "Easy",
+    "tags": ["library", "framework", "architecture"],
+    "hasCode": false,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 5,
+    "question": "What is the difference between imperative and declarative programming in the context of React?",
+    "shortAnswer": "Imperative code lists the steps to reach a result; declarative code describes the result and lets something else work out the steps. In React you declare what the UI looks like for the current state, and React performs the DOM mutations. The practical benefit is that you only maintain one description instead of every possible transition between states.",
+    "memoryHook": "Imperative is turn-by-turn directions. Declarative is giving the address.",
+    "answer": "## The contrast\n\n**Imperative:** \"Turn left, go 400m, turn right.\"\n**Declarative:** \"Take me to 12 Oak Street.\"\n\nBoth get you there. Only one still works when the road is closed.\n\n---\n\n## In code\n\n```js\n// Imperative — every transition is your problem\nfunction setLoading(isLoading) {\n  if (isLoading) {\n    spinner.style.display = 'block';\n    button.disabled = true;\n    errorBox.style.display = 'none';\n  } else {\n    spinner.style.display = 'none';\n    button.disabled = false;\n  }\n}\n```\n\n```jsx\n// Declarative — one description, all transitions derived\nfunction SaveButton({ status }) {\n  return (\n    <>\n      {status === 'loading' && <Spinner />}\n      {status === 'error' && <ErrorBox />}\n      <button disabled={status === 'loading'}>Save</button>\n    </>\n  );\n}\n```\n\n---\n\n## Why this matters as your app grows\n\nWith N states, imperative code has up to **N × N** transitions to handle, and forgetting one produces the classic bug where the spinner stays on screen after an error. Declarative code has **N** descriptions and React derives the transitions.\n\n> The mental shift interviewers listen for: **UI is a function of state**, often written `UI = f(state)`. Change the state, and the correct UI follows automatically.\n\n---\n\n## Where React is still imperative\n\nRefs. When you need to focus an input, play a video or measure a DOM node, you reach through the declarative layer with `useRef` and touch the node directly. It is a deliberate escape hatch, not a failure of the model.",
+    "categories": ["React Fundamentals"],
+    "difficulty": "Easy",
+    "tags": ["declarative", "imperative", "concepts"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 6,
+    "question": "What is one-way data binding and why does React use it?",
+    "shortAnswer": "Data flows in one direction: from parent to child through props. A child cannot write to its parent's state directly — it calls a callback the parent passed down. This makes data flow traceable, because when a value is wrong there is exactly one place it could have come from.",
+    "memoryHook": "Props down, events up. Water flows downhill; you shout back up.",
+    "answer": "## The rule\n\n**Data goes down through props. Changes go up through callbacks.**\n\n```jsx\nfunction Parent() {\n  const [name, setName] = useState('');\n\n  //          data down ↓        change up ↑\n  return <Child value={name} onChange={setName} />;\n}\n\nfunction Child({ value, onChange }) {\n  // The child cannot reassign the parent's state.\n  // It can only ask the parent to change it.\n  return <input value={value} onChange={(e) => onChange(e.target.value)} />;\n}\n```\n\n---\n\n## Why one-way instead of two-way\n\nWith two-way binding (Angular's `ngModel`, Vue's `v-model`), a child can write straight back into the parent's data. Convenient for forms, painful to debug at scale: when a value is wrong, any component holding a reference could be responsible.\n\nOne-way binding makes it a search problem with one answer. The value came from a prop. Follow the prop up. Repeat until you find the `useState` that owns it.\n\n| | One-way (React) | Two-way (Angular, Vue) |\n|---|---|---|\n| Data flow | Parent → child only | Both directions |\n| Form boilerplate | More | Less |\n| Debugging | Trace one path | Trace many writers |\n| Predictability | High | Lower at scale |\n\n---\n\n## The common objection\n\n\"But `v-model` is so much less typing for forms.\" True. React's answer is that form binding is a small, local cost, and libraries like React Hook Form remove most of it. The traceability is worth it once an app has hundreds of components.\n\n---\n\n## Related concept\n\nWhen two siblings need the same data, you **lift state up** to their closest common parent and pass it down to both. That is one-way data flow forcing you toward a single source of truth.",
+    "categories": ["React Fundamentals", "Components & Props"],
+    "difficulty": "Easy",
+    "tags": ["data-flow", "props", "one-way-binding"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 7,
+    "question": "What are React elements, components and instances?",
+    "shortAnswer": "An element is a plain immutable object describing what you want on screen. A component is the function that returns elements. An instance is the mounted component with its own state and lifecycle, which React creates and manages internally. Writing JSX creates elements, not instances.",
+    "memoryHook": "Component is the recipe, element is the order slip, instance is the dish being cooked.",
+    "answer": "## The three levels\n\n```jsx\n// COMPONENT — the function. A blueprint.\nfunction Greeting({ name }) {\n  return <h1>Hello, {name}</h1>;\n}\n\n// ELEMENT — a plain object describing a desired render.\n// This does NOT call Greeting. It just records the intent.\nconst element = <Greeting name=\"Ada\" />;\n\nconsole.log(element);\n// { type: Greeting, props: { name: 'Ada' }, key: null, ... }\n\n// INSTANCE — created by React when it mounts the element.\n// It holds the state and hooks. You never construct it yourself.\nroot.render(element);\n```\n\n---\n\n## Why the distinction matters\n\n**Elements are immutable and cheap.** Once created you cannot change one — you create a new element to describe the next state. Creating a thousand elements costs nothing; they are just objects.\n\n**Creating an element does not render it.** This trips people up:\n\n```jsx\n// This does not run ExpensiveComponent's body.\n// It just builds { type: ExpensiveComponent, props: {} }.\nconst el = <ExpensiveComponent />;\n\n// It only renders when React commits it to the tree.\n```\n\nThat is exactly why passing children as a prop can skip re-renders — the parent creates the element object, but if the element is the same reference, React can bail out of re-rendering the subtree.\n\n---\n\n## Summary table\n\n| | What it is | Who creates it | Mutable |\n|---|---|---|---|\n| **Component** | Function returning elements | You | n/a |\n| **Element** | Object describing desired UI | You, via JSX | No |\n| **Instance** | Mounted component with state | React | Internal |\n\n---\n\n## The interview trap\n\n\"Is `<Greeting />` a component?\" — No. `Greeting` is the component; `<Greeting />` is an **element** that describes rendering it.",
+    "categories": ["React Fundamentals", "JSX & Rendering"],
+    "difficulty": "Medium",
+    "tags": ["elements", "components", "instances"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 8,
+    "question": "What are the main advantages and disadvantages of React?",
+    "shortAnswer": "Advantages: a huge ecosystem and hiring pool, reusable components, declarative code that scales, and React Native for mobile. Disadvantages: it is unopinionated so every team invents its own architecture, the ecosystem churns fast, JSX plus tooling is a real learning curve, and client-rendered React has SEO and bundle-size costs unless you add SSR.",
+    "memoryHook": "Its greatest strength and its greatest weakness are the same thing: React decides almost nothing for you.",
+    "answer": "## Advantages\n\n| Advantage | Why it matters |\n|-----------|----------------|\n| **Component reuse** | Build a `<Button>` once, use it everywhere; fix it once |\n| **Declarative** | Describe state, not transitions — fewer inconsistent-UI bugs |\n| **Ecosystem** | A mature library exists for almost anything |\n| **Hiring** | The largest pool of developers of any UI library |\n| **React Native** | Transfer the same mental model to mobile |\n| **DevTools** | Component tree, props, and a profiler that finds real bottlenecks |\n| **Backwards compatibility** | Meta runs tens of thousands of components; upgrades are taken seriously |\n\n---\n\n## Disadvantages\n\n| Disadvantage | The honest version |\n|--------------|--------------------|\n| **Unopinionated** | Every team reinvents folder structure, state management and data fetching |\n| **Ecosystem churn** | Class → hooks → Server Components; tutorials rot quickly |\n| **Learning curve** | Not React itself, but JSX + bundler + router + state + TypeScript at once |\n| **SEO (CSR only)** | An empty `<div id=\"root\">` needs SSR or SSG to index reliably |\n| **Bundle size** | React + ReactDOM is ~45 KB gzipped before you add anything |\n| **Manual optimisation** | Until the compiler is universal, you place `memo` and `useMemo` by hand |\n\n---\n\n## How to answer this well\n\nInterviewers are checking whether you can criticise your main tool. A candidate who says \"React has no downsides\" reads as inexperienced.\n\nThe strongest answer names a specific pain you have actually hit. For example: *\"Unnecessary re-renders from context. Any consumer re-renders when any part of the value changes, so we ended up splitting one context into three, or reaching for Zustand with selectors.\"*\n\n> Worth adding: the React Compiler is designed to remove the manual-memoisation complaint by inserting memoisation automatically.",
+    "categories": ["React Fundamentals"],
+    "difficulty": "Easy",
+    "tags": ["pros-cons", "tradeoffs"],
+    "hasCode": false,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 9,
+    "question": "What is the difference between React and Angular or Vue?",
+    "shortAnswer": "React is a library that only handles rendering, uses JSX, and relies on one-way data flow. Angular is a full framework with TypeScript, dependency injection and two-way binding built in. Vue sits in the middle: templates instead of JSX, two-way binding for forms, and a fine-grained reactivity system that tracks dependencies automatically instead of re-running components.",
+    "memoryHook": "React gives you a rendering engine, Angular gives you the whole car, Vue gives you a car you can take apart.",
+    "answer": "## Side by side\n\n| | React | Angular | Vue |\n|---|-------|---------|-----|\n| **Type** | Library | Full framework | Progressive framework |\n| **Language** | JS/TS + JSX | TypeScript (enforced) | JS/TS + templates |\n| **Data binding** | One-way | Two-way | Two-way (`v-model`) |\n| **Reactivity** | Re-run the component | Zone.js / signals | Fine-grained proxies |\n| **Learning curve** | Moderate | Steep | Gentle |\n| **Bundled** | Rendering only | Router, HTTP, DI, forms, RxJS | Router and store official but optional |\n| **Owner** | Meta | Google | Community (Evan You) |\n\n---\n\n## The difference that actually matters technically\n\n**How each one knows something changed.**\n\n- **React** re-runs the component function and diffs the output. Explicit: you call `setState`.\n- **Vue** wraps state in proxies and tracks exactly which components read which properties. When a property changes, only those components update — no diffing of untouched subtrees.\n- **Angular** historically used Zone.js to patch async APIs and check the tree; modern Angular is moving to signals, which is closer to Vue's model.\n\nThat is why Vue and Solid rarely need `memo`: they know precisely what depends on what. React trades that for a simpler mental model — \"the component is just a function of its props and state\" — and asks you to memoise when it costs too much.\n\n---\n\n## Answering without sounding tribal\n\nDo not say \"React is better.\" Say what each optimises for:\n\n- **Angular** optimises for large teams that want consistency enforced by the framework. Enterprise, long-lived apps.\n- **React** optimises for flexibility and ecosystem size. You assemble your own stack.\n- **Vue** optimises for approachability and progressive adoption — you can add it to one page of an existing app.",
+    "categories": ["React Fundamentals"],
+    "difficulty": "Medium",
+    "tags": ["comparison", "angular", "vue"],
+    "hasCode": false,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 10,
+    "question": "What is the difference between client-side rendering, server-side rendering and static site generation?",
+    "shortAnswer": "CSR ships an empty HTML shell and builds the page in the browser with JavaScript. SSR renders the HTML on the server per request, so the user sees content immediately and crawlers get real markup. SSG renders the HTML once at build time and serves the same file to everyone, which is the fastest option but only works for content that does not change per user.",
+    "memoryHook": "CSR cooks in the browser, SSR cooks to order, SSG cooked it yesterday.",
+    "answer": "## The three strategies\n\n| | When HTML is built | First paint | SEO | Best for |\n|---|---|---|---|---|\n| **CSR** | In the browser | Slow | Weak without help | Dashboards, apps behind a login |\n| **SSR** | On the server, per request | Fast | Strong | Personalised, frequently changing pages |\n| **SSG** | At build time, once | Fastest | Strong | Blogs, docs, marketing, this site |\n\n---\n\n## What CSR actually ships\n\n```html\n<body>\n  <div id=\"root\"></div>\n  <script src=\"/bundle.js\"></script>\n</body>\n```\n\nThat is the whole document. Nothing is visible until the bundle downloads, parses and executes. On a slow connection that is seconds of blank screen, and any crawler that does not execute JavaScript sees an empty page.\n\n---\n\n## Hydration — the concept behind SSR\n\nSSR sends real HTML, so the user sees content fast. But that HTML is inert: no event handlers. React then **hydrates** it — downloads the JS, walks the existing DOM and attaches handlers.\n\nThe gap between \"looks ready\" and \"actually responds to clicks\" is the classic SSR complaint, and it is why React added streaming SSR and Server Components: to shrink how much JavaScript has to arrive before the page works.\n\n---\n\n## ISR, the fourth option\n\nIncremental Static Regeneration is SSG with an expiry. Serve the static file, and regenerate it in the background every N seconds. You get static performance with content that is only slightly stale — good for e-commerce listings and news.\n\n---\n\n## How to pick\n\nAsk two questions:\n\n1. **Does the page differ per user?** Yes → SSR. No → SSG.\n2. **Does it need to be indexed?** No, and it is behind a login → CSR is fine and simplest.\n\nMost real apps mix all three: static marketing pages, server-rendered product pages, client-rendered account dashboard.",
+    "categories": ["React Fundamentals", "React 19 & Server Components"],
+    "difficulty": "Medium",
+    "tags": ["ssr", "csr", "ssg", "hydration", "seo"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 11,
+    "question": "What is hydration and what is a hydration mismatch?",
+    "shortAnswer": "Hydration is React attaching event handlers and internal state to server-rendered HTML that is already in the DOM, instead of recreating it. A mismatch happens when the client's first render produces different markup from the server's — typically from using Date.now(), Math.random(), or window during render — and React warns and falls back to client rendering for that subtree.",
+    "memoryHook": "The server sends a statue; hydration brings it to life. If the statue does not match the blueprint, React throws it out and rebuilds.",
+    "answer": "## What hydration does\n\n```text\nServer:  renders HTML  →  sends real markup  →  user sees content (not interactive)\nClient:  downloads JS  →  renders the same tree  →  attaches handlers to existing DOM\n```\n\nThe key point: hydration **reuses** the existing DOM nodes. It does not recreate them. That is what makes it faster than a full client render and why the page does not flash.\n\n---\n\n## What causes a mismatch\n\nAnything that renders differently in the two environments:\n\n```jsx\n// ❌ Server time ≠ client time\nfunction Clock() {\n  return <p>{new Date().toLocaleTimeString()}</p>;\n}\n\n// ❌ Different random value in each environment\n<div id={`item-${Math.random()}`} />\n\n// ❌ `window` does not exist on the server\nconst isMobile = window.innerWidth < 768;\n\n// ❌ localStorage is browser-only\nconst theme = localStorage.getItem('theme');\n```\n\nInvalid HTML nesting causes it too — the browser silently repairs `<p><div/></p>` into something React did not render, and the trees no longer match.\n\n---\n\n## The fixes\n\n**Render the browser-only value after mount:**\n\n```jsx\nfunction Clock() {\n  const [time, setTime] = useState(null);      // matches server: null\n  useEffect(() => setTime(new Date()), []);    // fills in on the client\n  return <p>{time ? time.toLocaleTimeString() : 'Loading…'}</p>;\n}\n```\n\n**Or opt a single value out explicitly:**\n\n```jsx\n// React will not warn about this element's text content\n<time suppressHydrationWarning>{new Date().toISOString()}</time>\n```\n\n`suppressHydrationWarning` only applies one level deep and only silences the warning — use it for genuinely unavoidable differences like timestamps, not to paper over a real bug.\n\n---\n\n## Why it is worth taking seriously\n\nA mismatch is not cosmetic. React discards the server HTML for that subtree and re-renders on the client, which throws away the performance benefit you paid for by rendering on the server in the first place.",
+    "categories": ["React Fundamentals", "React 19 & Server Components"],
+    "difficulty": "Hard",
+    "tags": ["hydration", "ssr", "mismatch", "nextjs"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  },
+  {
+    "id": 12,
+    "question": "What is Strict Mode and why does it render components twice?",
+    "shortAnswer": "StrictMode is a development-only wrapper that surfaces unsafe patterns. It deliberately double-invokes component bodies, state updater functions and effects so that impure code and missing cleanup become obvious. It renders nothing itself and is completely stripped from production builds.",
+    "memoryHook": "It runs everything twice on purpose. If twice breaks it, it was already broken.",
+    "answer": "## What it looks like\n\n```jsx\nimport { StrictMode } from 'react';\n\ncreateRoot(document.getElementById('root')).render(\n  <StrictMode>\n    <App />\n  </StrictMode>\n);\n```\n\nIt renders no DOM and has zero production cost — the behaviour is development-only.\n\n---\n\n## What gets double-invoked\n\n- Component function bodies\n- `useState`, `useMemo` and `useReducer` initialiser functions\n- State updater functions\n- Effects: mount → cleanup → mount again\n\n---\n\n## Why this is a feature, not a bug\n\n**Double rendering catches impurity.** A component must be a pure function of its props and state. Running it twice makes side effects during render visible immediately:\n\n```jsx\nlet total = 0;\n\nfunction Cart({ items }) {\n  total += items.length;    // ❌ mutating outside state during render\n  return <p>{total}</p>;    // Doubles under StrictMode — bug exposed\n}\n```\n\n**Double-mounting effects catches missing cleanup.** Mount, unmount, mount again simulates what actually happens when a user navigates away and back:\n\n```jsx\n// ❌ Every mount adds a listener; none are ever removed\nuseEffect(() => {\n  window.addEventListener('resize', onResize);\n}, []);\n\n// ✅ Cleanup makes remounting safe\nuseEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => window.removeEventListener('resize', onResize);\n}, []);\n```\n\n---\n\n## The mistake people make\n\nSeeing an API call fire twice in development and \"fixing\" it with a ref guard:\n\n```jsx\n// ❌ Hiding the symptom\nconst didFetch = useRef(false);\nuseEffect(() => {\n  if (didFetch.current) return;\n  didFetch.current = true;\n  fetchData();\n}, []);\n```\n\nThe double call is telling you the effect is not resilient to remounting. The real fix is an `AbortController` in the cleanup, or a data library like React Query that deduplicates requests.\n\n> Removing `<StrictMode>` to stop the double render is trading a loud development warning for a silent production bug.",
+    "categories": ["React Fundamentals", "Effects & Lifecycle"],
+    "difficulty": "Medium",
+    "tags": ["strict-mode", "development", "purity", "effects"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": [
+      { "title": "react.dev — StrictMode", "url": "https://react.dev/reference/react/StrictMode" }
+    ]
+  },
+  {
+    "id": 13,
+    "question": "What does it mean that a React component must be pure?",
+    "shortAnswer": "Given the same props and state, a component must return the same JSX and change nothing outside itself while rendering. No mutating props, no writing to variables declared outside, no API calls or DOM changes during render. Side effects belong in event handlers or effects, which run after rendering.",
+    "memoryHook": "Render is a calculation, not an action. Same inputs in, same JSX out, nothing touched on the way through.",
+    "answer": "## The contract\n\nA component's render is a **calculation**. Calculations do not do things — they return values.\n\n```jsx\n// ✅ Pure — depends only on props, changes nothing\nfunction Invoice({ items, taxRate }) {\n  const subtotal = items.reduce((sum, i) => sum + i.price, 0);\n  return <p>Total: {subtotal * (1 + taxRate)}</p>;\n}\n```\n\n---\n\n## What breaks purity\n\n```jsx\nlet renderCount = 0;\n\nfunction Broken({ items, user }) {\n  renderCount++;                    // ❌ mutating an outer variable\n  items.sort((a, b) => a.id - b.id); // ❌ mutating a prop in place\n  user.lastSeen = Date.now();        // ❌ mutating a prop object\n  document.title = 'Invoice';        // ❌ touching the DOM during render\n  analytics.track('viewed');         // ❌ side effect during render\n  return <List items={items} />;\n}\n```\n\n```jsx\n// ✅ Fixed — copy before sorting, move effects out\nfunction Fixed({ items }) {\n  const sorted = [...items].sort((a, b) => a.id - b.id);  // or items.toSorted()\n\n  useEffect(() => {\n    document.title = 'Invoice';\n    analytics.track('viewed');\n  }, []);\n\n  return <List items={sorted} />;\n}\n```\n\n---\n\n## Where side effects are allowed\n\n| Where | When it runs | Use for |\n|-------|--------------|---------|\n| **Event handlers** | On user interaction | Submitting, navigating, most things |\n| **`useEffect`** | After render commits | Syncing with systems outside React |\n| **Render body** | During render | Nothing with side effects |\n\nPrefer event handlers. Most code people put in effects belongs in the handler that caused it.\n\n---\n\n## Why React insists on this\n\nPurity is what makes React's features safe:\n\n- **StrictMode** can double-render to find bugs\n- **Concurrent rendering** can start, abandon and restart a render\n- **`memo`** can skip a render entirely and be sure the output would have matched\n- **Server Components** can render once and cache the result\n\nEvery one of those breaks if rendering has side effects. This is why purity comes up in senior interviews — it is the assumption the whole modern architecture rests on.",
+    "categories": ["React Fundamentals", "Most Asked"],
+    "difficulty": "Medium",
+    "tags": ["purity", "side-effects", "rendering"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": [
+      { "title": "react.dev — Keeping Components Pure", "url": "https://react.dev/learn/keeping-components-pure" }
+    ]
+  },
+  {
+    "id": 14,
+    "question": "What is the difference between the render phase and the commit phase?",
+    "shortAnswer": "In the render phase React calls your components and builds the new element tree — this work is pure, can be paused, and can be thrown away. In the commit phase React applies the changes to the real DOM and runs effects — this is synchronous and cannot be interrupted. That split is what makes concurrent rendering possible.",
+    "memoryHook": "Render is a draft you can tear up; commit is the ink hitting the paper.",
+    "answer": "## The two phases\n\n| | Render phase | Commit phase |\n|---|---|---|\n| **What happens** | Call components, build tree, diff | Mutate the DOM, run effects |\n| **Interruptible** | Yes | No |\n| **Can be discarded** | Yes | No |\n| **Must be pure** | Yes | Side effects expected |\n| **Runs** | Possibly several times | Once per commit |\n\n---\n\n## Why the split exists\n\nBecause the render phase is pure and interruptible, React can begin rendering a low-priority update, notice the user typed, **abandon that work entirely**, handle the keystroke, and start again.\n\nThat is only safe if rendering had no side effects. If your component had already fired an API call or mutated a global, abandoning the render would leave the app inconsistent. This is the concrete reason purity is enforced.\n\n---\n\n## Where your code runs\n\n```jsx\nfunction Profile({ userId }) {\n  // RENDER PHASE — may run multiple times, may be discarded\n  const [user, setUser] = useState(null);\n  const initials = getInitials(user?.name);\n\n  // COMMIT PHASE — runs after the DOM is updated\n  useEffect(() => {\n    document.title = user?.name ?? 'Loading';\n  }, [user]);\n\n  // COMMIT PHASE, before the browser paints\n  useLayoutEffect(() => {\n    const { height } = ref.current.getBoundingClientRect();\n    setHeight(height);\n  }, []);\n\n  return <h1>{initials}</h1>;   // ← the render phase's return value\n}\n```\n\n---\n\n## Commit is split in two\n\n1. **Mutation** — React applies DOM changes. `useLayoutEffect` runs here, synchronously, before the browser paints. That is why you use it for measurements that would otherwise cause a visible flicker, and why blocking work in it is costly.\n2. **Passive effects** — `useEffect` runs after paint, so it does not delay what the user sees.\n\n> The practical rule that falls out of this: **measure or synchronously adjust layout in `useLayoutEffect`; do everything else in `useEffect`.**",
+    "categories": ["React Fundamentals", "Effects & Lifecycle"],
+    "difficulty": "Hard",
+    "tags": ["render-phase", "commit-phase", "fiber", "concurrent"],
+    "hasCode": true,
+    "hasLinks": false,
+    "resources": []
+  }
+]
