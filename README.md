@@ -1,6 +1,8 @@
 # React Interview Questions
 
-> 113 React interview questions, written to be memorized rather than skimmed.
+> 229 React interview questions, written to be memorized rather than skimmed.
+
+Covers the full senior loop: React concepts, machine coding, frontend system design, DSA, security, architecture and behavioural rounds.
 
 A free, open-source React interview preparation site. Every question has three layers:
 
@@ -36,8 +38,12 @@ npm run dev      # http://localhost:3000
 
 ## What is covered
 
-| Category | Questions |
-|----------|-----------|
+A senior frontend loop is typically 4–5 rounds. This covers all of them.
+
+### Round 1 — React & JavaScript concepts
+
+| Category | Covers |
+|----------|--------|
 | React Fundamentals | Virtual DOM, reconciliation, purity, render vs commit phase |
 | JSX & Rendering | Keys, conditional rendering, fragments, portals, what triggers a re-render |
 | Components & Props | Composition, HOCs, compound components, TypeScript props |
@@ -51,6 +57,26 @@ npm run dev      # http://localhost:3000
 | React 19 & Server Components | RSC, Server Actions, streaming SSR, App Router |
 | Testing & Tooling | React Testing Library, Vite, debugging |
 | JavaScript & TypeScript | Closures, equality, the event loop, async pitfalls |
+
+### Round 2 — Machine coding
+
+Build-it-in-60-minutes challenges with the approach to state first, then a worked solution: debounce and throttle, typeahead, infinite scroll, virtualised list, accessible modal with focus trap, drag-and-drop, multi-step wizard, data table, toast system, tabs, carousel, `useFetch`, `Promise.all`, memoize, deep clone, LRU cache, URL-synced search.
+
+### Round 3 — Frontend system design
+
+News feed, real-time chat, e-commerce PLP/PDP, analytics dashboard, offline-first app, file upload with resumability, design system, image gallery, collaborative editor, notification system, caching strategy, i18n, A/B testing and feature flags — plus how to approach the round itself.
+
+### Round 4 — DSA
+
+The patterns that actually appear in frontend loops: hash maps, two pointers, sliding window, binary search, recursion, trees, backtracking, DP, heaps, graphs and topological sort — in JavaScript, with the complexity trade-offs stated.
+
+### Cross-cutting
+
+| Category | Covers |
+|----------|--------|
+| Security & Auth | Token storage, JWT vs sessions, XSS, CSRF, OAuth + PKCE, CSP, CORS, RBAC, supply chain |
+| Architecture at Scale | Folder structure, monorepos, micro-frontends, migrations, observability, bundle budgets, CI/CD, deploy safety |
+| Behavioral & Experience | Technical decisions, disagreement, incidents, code review, mentoring, failure, scope pushback |
 | Most Asked | The cross-cutting set to drill first |
 
 ---
@@ -95,7 +121,7 @@ src/
 
 ```json
 {
-  "id": 114,
+  "id": 230,
   "question": "The question, phrased the way it actually gets asked",
   "shortAnswer": "One or two sentences. This is what you say out loud. Max 400 characters, no code fences.",
   "memoryHook": "A mnemonic or contrast. Max 180 characters — it has to fit on a flashcard.",

@@ -30,6 +30,12 @@ body:
         - React 19 & Server Components
         - Testing & Tooling
         - JavaScript & TypeScript
+        - Machine Coding
+        - Frontend System Design
+        - Security & Auth
+        - Architecture at Scale
+        - DSA
+        - Behavioral & Experience
     validations:
       required: true
 

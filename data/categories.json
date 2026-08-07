@@ -65,6 +65,36 @@
     "description": "The JavaScript closures, equality rules and async behaviour that React interviews probe, plus typing React with TypeScript"
   },
   {
+    "name": "Machine Coding",
+    "slug": "machine-coding",
+    "description": "Build-it-in-60-minutes challenges: typeahead, infinite scroll, virtualised lists, custom hooks, carousels. Approach first, then the worked solution"
+  },
+  {
+    "name": "Frontend System Design",
+    "slug": "frontend-system-design",
+    "description": "Designing a news feed, chat, collaborative editor or dashboard at scale — data flow, caching, real-time, rendering strategy and trade-offs"
+  },
+  {
+    "name": "Security & Auth",
+    "slug": "security-and-auth",
+    "description": "JWT versus sessions, OAuth and OIDC flows, token storage, CSRF, CSP, XSS and the security questions senior frontend candidates are expected to answer"
+  },
+  {
+    "name": "Architecture at Scale",
+    "slug": "architecture-at-scale",
+    "description": "Monorepos, micro-frontends, design systems, folder structure, feature flags, migrations and observability in codebases with many contributors"
+  },
+  {
+    "name": "DSA",
+    "slug": "dsa",
+    "description": "Data structures and algorithms in JavaScript — hash maps, two pointers, sliding window, recursion, trees and the patterns behind them"
+  },
+  {
+    "name": "Behavioral & Experience",
+    "slug": "behavioral-and-experience",
+    "description": "Technical decisions you owned, code review, mentoring, disagreement and incident retrospectives — structures for answering, not scripts to recite"
+  },
+  {
     "name": "Most Asked",
     "slug": "most-asked",
     "description": "The questions that come up in almost every React interview. If you only have one evening, drill these"

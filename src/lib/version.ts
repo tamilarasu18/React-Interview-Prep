@@ -8,9 +8,9 @@
  * 4. Update these constants
  */
 
-export const APP_VERSION = '1.0.0';
-export const APP_VERSION_DATE = '2026-08-06';
-export const APP_VERSION_NAME = 'Initial release';
+export const APP_VERSION = '1.1.0';
+export const APP_VERSION_DATE = '2026-08-07';
+export const APP_VERSION_NAME = 'Full senior interview loop';
 
 export const getVersionString = () => `Version ${APP_VERSION}`;
 
