@@ -5,7 +5,8 @@ module.exports = {
   sitemapSize: 7000,
   changefreq: 'weekly',
   priority: 0.7,
-  exclude: ['/api/*'],
+  // /offline/ is a service worker fallback, not a page anyone should land on.
+  exclude: ['/api/*', '/offline', '/offline/'],
   robotsTxtOptions: {
     policies: [
       {

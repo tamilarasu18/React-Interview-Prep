@@ -2,6 +2,8 @@
 
 > 229 React interview questions, written to be memorized rather than skimmed.
 
+**[Live site → react-interview-prep-ivory.vercel.app](https://react-interview-prep-ivory.vercel.app/)**
+
 Covers the full senior loop: React concepts, machine coding, frontend system design, DSA, security, architecture and behavioural rounds.
 
 A free, open-source React interview preparation site. Every question has three layers:
@@ -11,6 +13,8 @@ A free, open-source React interview preparation site. Every question has three l
 3. **A full explanation** — code, comparison tables, gotchas, and the reasoning behind the short answer.
 
 Plus a **flashcard mode** that shuffles, filters by topic and difficulty, and remembers what you already know, and a **printable cheat sheet** of every short answer and memory hook.
+
+It is also an **installable PWA** — add it to your home screen and revise on the train without a signal.
 
 ---
 
@@ -25,8 +29,8 @@ Recall under pressure is a different skill from comprehension. It needs short an
 ## Quick start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/react-interview-prep.git
-cd react-interview-prep
+git clone https://github.com/tamilarasu18/React-Interview-Prep.git
+cd React-Interview-Prep
 
 npm install
 npm run dev      # http://localhost:3000
@@ -105,6 +109,10 @@ data/
 scripts/
   build-questions.js  Merges the parts, derives category counts
   validate-questions.js
+public/
+  manifest.json       PWA manifest
+  sw.js               Service worker — hand-written, no build step
+  icon-*.png          App icons, rendered from react-icon.svg
 src/
   app/                Next.js App Router pages
   components/         QuestionCard, FlashcardDeck, AnswerRenderer, …
@@ -141,6 +149,36 @@ src/
 Category names must already exist in `data/categories.json` — the build fails on unknown ones rather than silently creating a category. Counts are computed, never hand-maintained.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the writing style rules.
+
+---
+
+## Progressive web app
+
+The site installs to a home screen and keeps working without a connection.
+
+`public/sw.js` is written by hand rather than generated, because a static export makes the caching rules fall straight out of what each response is:
+
+| Request | Strategy | Why |
+|---------|----------|-----|
+| `/_next/static/*` | Cache first | Filenames are content-hashed, so a URL never changes meaning |
+| HTML documents | Network first, cache as backup | Deploys change them; the copy is what makes a page work offline |
+| Icons, SVG, images | Stale while revalidate | Instant, refreshed in the background |
+| Never visited, unreachable | `/offline/` | An honest fallback beats a browser error page |
+
+Only the entry points are precached at install. Seeding all 229 question pages would cost megabytes for pages most people never open, so each page is cached the first time it is actually read.
+
+The worker is registered in production builds only — under `next dev` it would cache modules the dev server is still rebuilding. To test it locally:
+
+```bash
+npm run build
+npx serve out
+```
+
+Then use DevTools → Application → Service Workers, and Network → Offline.
+
+**After changing anything cached at install**, bump `CACHE_VERSION` in `public/sw.js` so old caches are evicted on the next activation.
+
+The PNG icons in `public/` are rendered from `public/react-icon.svg`; regenerate them with any SVG-to-PNG tool at 192px and 512px, keeping the maskable pair's artwork inside the middle 80% so Android's adaptive mask cannot crop it.
 
 ---
 

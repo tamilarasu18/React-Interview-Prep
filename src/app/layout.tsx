@@ -1,9 +1,11 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import InstallPrompt from '@/components/InstallPrompt';
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import { siteConfig } from '@/config/site';
 import { getMetadata } from '@/lib/questions';
 
@@ -32,8 +34,21 @@ export const metadata: Metadata = {
     'javascript interview',
   ],
   authors: [{ name: siteConfig.author.name }],
+  manifest: '/manifest.json',
+  applicationName: siteConfig.name,
+  appleWebApp: {
+    capable: true,
+    title: 'React Prep',
+    // The nav bar is white, so let it run under the iOS status bar.
+    statusBarStyle: 'default',
+  },
   icons: {
-    icon: [{ url: '/react-icon.svg', type: 'image/svg+xml' }],
+    icon: [
+      { url: '/react-icon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
     title: `${siteConfig.name} - ${totalQuestions} Questions`,
@@ -46,6 +61,12 @@ export const metadata: Metadata = {
     title: `${siteConfig.name} - ${totalQuestions} Questions`,
     description: siteConfig.description,
   },
+};
+
+// Matches the white sticky nav, so the status bar reads as part of the app.
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
@@ -84,6 +105,8 @@ export default function RootLayout({
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <InstallPrompt />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

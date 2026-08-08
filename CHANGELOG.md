@@ -7,6 +7,12 @@ Keep entries **minimalistic** — group by category, describe major changes only
 
 ## [Unreleased]
 
+### Added
+
+- Installable PWA — web app manifest, app icons, and home screen shortcuts to Flashcards, Cheat Sheet and Categories
+- Offline support via a hand-written service worker: cache-first for hashed assets, network-first for pages, `/offline/` as the fallback
+- Install prompt shown once the browser reports the app is installable, dismissible and remembered
+
 ## [1.1.0] - 2026-08-07
 
 ### Added
@@ -37,6 +43,6 @@ Keep entries **minimalistic** — group by category, describe major changes only
 - Split content source: one JSON file per topic, compiled by `scripts/build-questions.js`
 - Content validation via `scripts/validate-questions.js` — enforces the short-answer and memory-hook limits, category existence, and code-fence correctness
 
-[Unreleased]: https://github.com/YOUR_USERNAME/react-interview-prep/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/YOUR_USERNAME/react-interview-prep/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/YOUR_USERNAME/react-interview-prep/releases/tag/v1.0.0
+[Unreleased]: https://github.com/tamilarasu18/React-Interview-Prep/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/tamilarasu18/React-Interview-Prep/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/tamilarasu18/React-Interview-Prep/releases/tag/v1.0.0
